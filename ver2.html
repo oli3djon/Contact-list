@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+</head>
+
+<body class="bg-dark text-light">
+    <div id="app"></div>
+
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"
+        integrity="sha512-kp7YHLxuJDJcOzStgd6vtpxr4ZU9kjn77e6dBsivSz+pUuAuMlE2UTdKB7jjsWT84qbS8kdCWHPETnP/ctrFsA=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+
+    <script type="text/babel">
+        let contacts = [
+            {
+                id: 1,
+                name: 'Darth Vader',
+                phoneNumber: '+250966666666',
+                image: 'http://cs7.pikabu.ru/images/big_size_comm_an/2014-03_7/13962622876915.gif',
+                email: 'darth_vader@gmail.com',
+                address: 'Starkiller'
+            }, {
+                id: 2,
+                name: 'Princess Leia',
+                phoneNumber: '+250966344466',
+                image: 'http://images6.fanpop.com/image/photos/33100000/CARRIE-FISHER-anakin-vader-and-princess-leia-33186069-190-149.gif',
+                email: 'princess_leia@gmail.com',
+                address: 'Endor'
+            }, {
+                id: 3,
+                name: 'Luke Skywalker',
+                phoneNumber: '+250976654433',
+                image: 'https://media4.giphy.com/media/3ornk6UHtk276vLtkY/giphy.gif',
+                email: 'luke_sky@gmail.com',
+                address: 'Tatooine'
+            }, {
+                id: 4,
+                name: 'Chewbacca',
+                phoneNumber: '+250456784935',
+                image: 'https://media.giphy.com/media/RUUdVZqwpfTRS/giphy.gif',
+                email: 'chewbacca@gmail.com',
+                address: 'Hoth'
+            }
+        ];
+
+        class Item extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { show: false, display: "none", btn: "▼" }
+                this.showDetails = this.showDetails.bind(this)
+            }
+            showDetails(e) {
+                this.setState({ show: !this.state.show })
+
+                if (this.state.display == "none") {
+                    this.setState({ display: "block" })
+                } else {
+                    this.setState({ display: "none" })
+                }
+
+                if (this.state.btn == "▼") {
+                    this.setState({ btn: "▲" })
+                } else {
+                    this.setState({ btn: "▼" })
+                }
+            }
+
+            render() {
+                return <div className="my-2" style={{ borderBottom: "1px dashed" }}>
+                    <div className="row">
+                        <div className="col-auto">
+                            <img src={this.props.contact.image} width="100px" height="100px" />
+                        </div>
+                        <div className="col">
+                            <h2>{this.props.contact.name}</h2>
+                            <h6>{this.props.contact.phoneNumber}</h6>
+
+                        </div>
+                        <div className="col-auto">
+                            <button type="button" className="btn text-light" onClick={this.showDetails}>{this.state.btn}</button>
+                        </div>
+                    </div>
+                    <div style={{ display: this.state.display }}>
+                        <p>Email: {this.props.contact.email}</p>
+                        <p>Address: {this.props.contact.address}</p>
+                    </div>
+                </div>
+            }
+        }
+        class ListItem extends React.Component {
+            constructor(props) {
+                super(props)
+                this.state = { items: this.props.data, filter: "Name" }
+                this.filterItems = this.filterItems.bind(this)
+                this.filterName = this.filterName.bind(this)
+                this.filterPhoneNumber = this.filterPhoneNumber.bind(this)
+            }
+
+            filterName(e) {
+                this.setState({ filter: "Name" })
+            }
+            filterPhoneNumber(e) {
+                this.setState({ filter: "PhoneNumber" })
+            }
+
+            filterItems(e) {
+                let filter = this.state.filter
+                let filteredItems = this.props.data.filter(function (item) {
+                    let search_in = filter == "PhoneNumber" ? item.phoneNumber : item.name
+                    return search_in.toLowerCase().search(e.target.value.toLowerCase()) !== -1;
+                })
+                this.setState({ items: filteredItems })
+            }
+
+            render() {
+                return <div className="container">
+                    <div class="row justify-content-center">
+                        <div class="col-5">
+                            <input type="text" className="form-control mt-3" placeholder="Search" onChange={this.filterItems} />
+                            <button className="btn btn-light dropdown-toggle mt-1" type="button" data-bs-toggle="dropdown">{this.state.filter}</button>
+                            <ul className="dropdown-menu dropdown-menu-end">
+                                <li><a className="dropdown-item" href="#" onClick={this.filterName}>Name</a></li>
+                                <li><a className="dropdown-item" href="#" onClick={this.filterPhoneNumber}>PhoneNumber</a></li>
+                            </ul>
+
+                            {
+                                this.state.items.map(function (item) {
+                                    return <Item contact={item} key={item.id} />
+                                })
+                            }
+                        </div>
+                    </div>
+
+
+                </div>
+            }
+        }
+
+        ReactDOM.render(
+            <div>
+                <ListItem data={contacts} />
+            </div>,
+            document.getElementById("app")
+        )
+    </script>
+</body>
+
+</html>

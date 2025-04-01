@@ -1,1 +1,2 @@
-# Contact-list
+# contact-list
+👪 React JS Contact List App
